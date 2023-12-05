@@ -1,0 +1,66 @@
+﻿@model ArticleDetailVM
+
+@{
+    ViewData["Title"] = "Makale Detay Sayfası";
+}
+
+<div class="card shadow border-0 mt-4 mb-4">
+    <div class="card-header bg-secondary bg-gradient text-light py-4">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h3 class="text-white text-uppercase">@Model.Title</h3>
+                <p class="text-white-50 fw-semibold mb-0">Yazar: @Model.Author</p>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="py-3">
+            <div class="row">
+                <div class="col-6 col-md-2 offset-lg-1 pb-1">
+                    <p class="text-dark text-opacity-75 text-center">
+                        Görüntülenme sayısı:
+                        <span id="numberOfViewsSpan_@Model.Id">
+                            @Model.NumberOfViews
+                        </span>
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="row pl-2 my-3">
+                        <p class="text-secondary lh-sm">@Html.Raw(Model.Content)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/signalr.js"></script>
+    <script>
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/articleHub")
+            .build();
+
+        connection.on("ReceiveViewCount", (articleId, newCount) => {
+            const spanElement = document.getElementById(`numberOfViewsSpan_${articleId}`);
+            if (spanElement) {
+                spanElement.innerText = newCount;
+            }
+        });
+
+        function newWindowLoadedOnClient() {
+            connection.send("IncreaseViewCount");
+        }
+
+        connection.start().then(() => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const articleId = parseInt(urlParams.get('articleId'));
+
+            connection.invoke("IncreaseViewCount", articleId).catch(err => console.error(err));
+        }).catch(err => {
+            console.error(err.toString());
+        });
+    </script>
+}

@@ -1,0 +1,42 @@
+﻿@model IEnumerable<ArticleVM>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="row py-3">
+    @foreach (var item in Model)
+    {
+        <div class="col-lg-3 col-sm-6">
+            <div class="row p-2">
+                <div class="col-12 p-1">
+                    <div  class="card border-0 p-3 shadow border-top border-5 rounded d-flex flex-column">
+                        <div class="card-body pb-0 flex-grow-1">
+                            <div class="pl-1">
+                                <p style="height: 100px;" class="card-title h5 text-dark opacity-75 text-uppercase text-center">@item.Title</p>
+                                <p style="height: 40px;" class="card-title text-dark text-opacity-75 text-center">Yazar: <b>@item.Author</b></p>
+                            </div>
+                            <div class="pl-1">
+                                <p class="text-dark text-opacity-75 text-center">
+                                    Görüntülenme sayısı:
+                                    <span id="numberOfViewsSpan_@item.Id">
+                                        @item.NumberOfViews
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        <div>
+                            <span hidden="hidden" id="articleId_@item.Id">@item.Id</span>
+                            <a id="articleDetailButton_@item.Id"
+                               asp-action="ArticleDetail"
+                               asp-route-articleId="@item.Id"
+                               articleid="@item.Id"
+                               class="btn btn-primary bg-gradient border-0 form-control articleDetailButton">
+                                Makale Oku
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
